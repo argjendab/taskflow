@@ -2,6 +2,12 @@
 
 import { useState } from "react";
 
+type Task = {
+    id: number;
+    text: string;
+    completed: boolean;
+};
+
 export default function Dashboard() {
     
     const [tasks, setTasks] = useState([
@@ -22,13 +28,13 @@ export default function Dashboard() {
         }
     };
     
-    const toggleTask = (id) => {
+    const toggleTask = (id:number) => {
         setTasks(tasks.map(task => 
             task.id === id ? {...task, completed: !task.completed } : task
         ));
     };
 
-    const deleteTask = (id) => {
+    const deleteTask = (id: number) => {
         setTasks(tasks.filter(task => task.id !== id));
     };
 
