@@ -2,21 +2,16 @@
 
 import { useState } from "react";
 
-type Task = {
-    id: number;
-    text: string;
-    completed: boolean;
-};
-
 export default function Dashboard() {
     
     const [tasks, setTasks] = useState([
-        
+        { id: 1, text: "Welcome to TaskFlow!", completed: false }
     ]);
 
     const [newTask, setNewTask] = useState('');
 
-    const addTask = (e) => {
+    // FIX: Added proper TypeScript type for the event
+    const addTask = (e: React.FormEvent) => {
         e.preventDefault();
         if(newTask.trim()) {
             setTasks([...tasks, {
@@ -28,12 +23,14 @@ export default function Dashboard() {
         }
     };
     
-    const toggleTask = (id:number) => {
+    // FIX: Added proper TypeScript type for the id
+    const toggleTask = (id: number) => {
         setTasks(tasks.map(task => 
             task.id === id ? {...task, completed: !task.completed } : task
         ));
     };
 
+    // FIX: Added proper TypeScript type for the id
     const deleteTask = (id: number) => {
         setTasks(tasks.filter(task => task.id !== id));
     };
@@ -48,7 +45,7 @@ export default function Dashboard() {
                 </div>
 
                 <form onSubmit={addTask} className="mb-8">
-                    <div className="space-x-2">
+                    <div className="flex gap-2">
                         <input
                         type="text"
                         value={newTask}
@@ -67,28 +64,30 @@ export default function Dashboard() {
                 {/* Tasks List */}
                 <div className="bg-white rounded-xl shadow-sm p-6">
                     <div className="flex justify-between items-center mb-4">
-                        <h2>Your Tasks</h2>
+                        <h2 className="text-xl font-semibold">Your Tasks</h2>
                         <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-sm">
-                            {tasks.filter(t=>!t.completed).length} pending
+                            {tasks.filter(t => !t.completed).length} pending
                         </span>
                     </div>
 
                     {tasks.length === 0 ? (
-                        <p className="text-gray-500">No tasks yet. Add one above!</p>
+                        <p className="text-gray-500 text-center py-4">No tasks yet. Add one above!</p>
                     ) : (
                         <div className="space-y-3">
-                            {tasks.map(task=> (
+                            {tasks.map(task => (
                                 <div
                                 key={task.id}
                                 className={`flex items-center justify-between p-4 border rounded-lg transition-all ${
                                     task.completed ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200 hover:border-blue-300'
                                 }`}
                                 >
-                                    <div className="space-x-2 flex items-center">
-                                        <input type="checkbox"
+                                    <div className="flex items-center gap-3">
+                                        <input 
+                                        type="checkbox"
                                         checked={task.completed}
                                         onChange={() => toggleTask(task.id)}
-                                        className="w-5 h-5 text-blue-500 rounded focus:ring-blue-400"/>
+                                        className="w-5 h-5 text-blue-500 rounded focus:ring-blue-400"
+                                        />
                                         <span className={
                                         task.completed ? 'line-through text-gray-500' : 'text-gray-800'
                                         }>
@@ -96,17 +95,25 @@ export default function Dashboard() {
                                         </span>
                                     </div>
 
-                                    <button onClick={() => deleteTask(task.id)} className="text-gray-400 hover:text-red-500 transition-colors">✕</button>
+                                    <button 
+                                    onClick={() => deleteTask(task.id)} 
+                                    className="text-gray-400 hover:text-red-500 transition-colors"
+                                    >
+                                        ✕
+                                    </button>
                                 </div>
                             ))}
                         </div>
                     )}
                     
                     {/* Quick Stats */}
-                    <div> {
-                        tasks.length > 0 && ( <p className="px-0 pt-3">{tasks.filter(t=>t.completed).length} of {tasks.length} tasks completed</p> )}
-
-                        </div>
+                    <div className="mt-4">
+                        {tasks.length > 0 && ( 
+                            <p className="text-gray-600 text-center">
+                                {tasks.filter(t => t.completed).length} of {tasks.length} tasks completed
+                            </p> 
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
