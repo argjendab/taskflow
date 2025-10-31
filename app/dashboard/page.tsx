@@ -1,14 +1,31 @@
 'use client'
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+interface Task {
+  id: number;
+  text: string;
+  completed: boolean;
+  priority: 'low' | 'medium' | 'high'; // ADD: Priority type
+}
 
 export default function Dashboard() {
     
-    const [tasks, setTasks] = useState([
-        { id: 1, text: "Welcome to TaskFlow!", completed: false }
-    ]);
-
+    const [tasks, setTasks] = useState<Task[]>([]);
     const [newTask, setNewTask] = useState('');
+    const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
+
+    //load tasks from localstorage when component mounts
+    useEffect(()=>{
+        const savedTasks = localStorage.getItem('taskflow-tasks');
+        if(savedTasks) {
+            setTasks(JSON.parse(savedTasks));
+        }
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem('taskflow-tasks', JSON.stringify(tasks));
+    }, [tasks]);
 
     // FIX: Added proper TypeScript type for the event
     const addTask = (e: React.FormEvent) => {
@@ -17,9 +34,11 @@ export default function Dashboard() {
             setTasks([...tasks, {
                 id: Date.now(),
                 text: newTask,
-                completed: false
+                completed: false,
+                priority: priority
             }]);
             setNewTask('');
+            setPriority('medium');
         }
     };
     
@@ -33,6 +52,15 @@ export default function Dashboard() {
     // FIX: Added proper TypeScript type for the id
     const deleteTask = (id: number) => {
         setTasks(tasks.filter(task => task.id !== id));
+    };
+
+    const getPriorityColor = (priority: string) => {
+        switch(priority) {
+            case 'high': return 'bg-red-100 text-red-800 border-red-200';
+            case 'medium': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+            case 'low': return 'bg-green-100 text-green-800 border-green-200';
+            default: return 'bg-bray-100 text-gray-800';
+        }
     };
 
     return (
@@ -53,6 +81,15 @@ export default function Dashboard() {
                         placeholder="What needs to be done?"
                         className="flex-1 p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
+                        <select
+                            value={priority}
+                            onChange={(e) => setPriority(e.target.value)}
+                            className="p-3 border border-gray-300 rounded-lg focus:outline-none focus-ring-2 focus:ring-blue-500"
+                        >
+                            <option value="low">💤 Low</option>
+                            <option value="medium">⚡ Medium</option>
+                            <option value="high">🔥 High</option>
+                        </select>
                         <button 
                         type="submit"
                         className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 font-medium">
@@ -92,6 +129,13 @@ export default function Dashboard() {
                                         task.completed ? 'line-through text-gray-500' : 'text-gray-800'
                                         }>
                                             {task.text}
+                                        </span>
+                                        <span className={`text-xs font-medium px-2 py-1 rounded-full border ${getPriorityColor(task.priority)}`}>
+                                            {task.priority === 'high' ? 'High':
+                                            task.priority === 'medium' ? 'Medium':
+                                            'Low'
+                                            }
+
                                         </span>
                                     </div>
 
