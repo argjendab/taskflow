@@ -2,6 +2,13 @@
 
 import { useState, useEffect } from "react";
 
+interface Task {
+  id: number;
+  text: string;
+  completed: boolean;
+  priority: 'low' | 'medium' | 'high';
+}
+
 export default function Dashboard() {
     
     const [tasks, setTasks] = useState<Task[]>([]);
