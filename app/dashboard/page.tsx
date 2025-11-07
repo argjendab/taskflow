@@ -2,13 +2,6 @@
 
 import { useState, useEffect } from "react";
 
-interface Task {
-  id: number;
-  text: string;
-  completed: boolean;
-  priority: 'low' | 'medium' | 'high'; // ADD: Priority type
-}
-
 export default function Dashboard() {
     
     const [tasks, setTasks] = useState<Task[]>([]);
@@ -83,7 +76,7 @@ export default function Dashboard() {
                         />
                         <select
                             value={priority}
-                            onChange={(e) => setPriority(e.target.value)}
+                            onChange={(e) => setPriority(e.target.value as 'low' | 'medium' | 'high')}
                             className="p-3 border border-gray-300 rounded-lg focus:outline-none focus-ring-2 focus:ring-blue-500"
                         >
                             <option value="low">💤 Low</option>
