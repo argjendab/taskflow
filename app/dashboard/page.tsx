@@ -7,6 +7,7 @@ interface Task {
   text: string;
   completed: boolean;
   priority: 'low' | 'medium' | 'high';
+  dueDate: string;
 }
 
 export default function Dashboard() {
@@ -14,6 +15,7 @@ export default function Dashboard() {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [newTask, setNewTask] = useState('');
     const [priority, setPriority] = useState<'low' | 'medium' | 'high'>('medium');
+    const [dueDate, setDueDate] = useState('');
 
     //load tasks from localstorage when component mounts
     useEffect(()=>{
@@ -35,10 +37,12 @@ export default function Dashboard() {
                 id: Date.now(),
                 text: newTask,
                 completed: false,
-                priority: priority
+                priority: priority,
+                dueDate: dueDate || undefined
             }]);
             setNewTask('');
             setPriority('medium');
+            setDueDate('');
         }
     };
     
@@ -62,6 +66,22 @@ export default function Dashboard() {
             default: return 'bg-bray-100 text-gray-800';
         }
     };
+
+    const getDueDateStatus = (dueDate?: string) => {
+    if (!dueDate) return null;
+    
+    const today = new Date();
+    const due = new Date(dueDate);
+    const timeDiff = due.getTime() - today.getTime();
+    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    
+    if (daysDiff < 0) return { text: 'Overdue', color: 'bg-red-500 text-white' };
+    if (daysDiff === 0) return { text: 'Due today', color: 'bg-orange-500 text-white' };
+    if (daysDiff <= 3) return { text: `Due in ${daysDiff} days`, color: 'bg-yellow-500 text-white' };
+    
+    return { text: new Date(dueDate).toLocaleDateString(), color: 'bg-gray-100 text-gray-800' };
+    };
+
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
@@ -90,6 +110,13 @@ export default function Dashboard() {
                             <option value="medium">⚡ Medium</option>
                             <option value="high">🔥 High</option>
                         </select>
+
+                        <input type="date"
+                        value={dueDate}
+                        onChange={(e) => setDueDate(e.target.value)}
+                        className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+
                         <button 
                         type="submit"
                         className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 font-medium">
@@ -111,7 +138,10 @@ export default function Dashboard() {
                         <p className="text-gray-500 text-center py-4">No tasks yet. Add one above!</p>
                     ) : (
                         <div className="space-y-3">
-                            {tasks.map(task => (
+                            {tasks.map(task => { 
+                                const dueStatus = getDueDateStatus(task.dueDate);
+
+                                return (
                                 <div
                                 key={task.id}
                                 className={`flex items-center justify-between p-4 border rounded-lg transition-all ${
@@ -130,6 +160,11 @@ export default function Dashboard() {
                                         }>
                                             {task.text}
                                         </span>
+                                        {dueStatus && (
+                                        <div className={`text-xs font-medium px-2 py-1 rounded-full mt-1 ${dueStatus.color}`}>
+                                        📅 {dueStatus.text}
+                                        </div>
+                                        )}
                                         <span className={`text-xs font-medium px-2 py-1 rounded-full border ${getPriorityColor(task.priority)}`}>
                                             {task.priority === 'high' ? 'High':
                                             task.priority === 'medium' ? 'Medium':
@@ -146,7 +181,7 @@ export default function Dashboard() {
                                         ✕
                                     </button>
                                 </div>
-                            ))}
+                            )})}
                         </div>
                     )}
                     
