@@ -38,7 +38,7 @@ export default function Dashboard() {
                 text: newTask,
                 completed: false,
                 priority: priority,
-                dueDate: dueDate || undefined
+                dueDate: dueDate
             }]);
             setNewTask('');
             setPriority('medium');
