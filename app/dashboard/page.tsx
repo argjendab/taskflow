@@ -132,7 +132,7 @@ export default function Dashboard() {
                         </div>
                         
                         <select value={filterPriority}
-                        onChange={(e) => setFilterPriority(e.target.value as any)}
+                        onChange={(e) => setFilterPriority(e.target.value as 'all' | 'low' | 'medium' | 'high')}
                         className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         >
                             <option value="all">All Priorities</option>
@@ -143,7 +143,7 @@ export default function Dashboard() {
 
                          <select
             value={filterCompletion}
-            onChange={(e) => setFilterCompletion(e.target.value as any)}
+            onChange={(e) => setFilterCompletion(e.target.value as 'all' | 'completed' | 'pending')}
             className="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
             <option value="all">All Tasks</option>
